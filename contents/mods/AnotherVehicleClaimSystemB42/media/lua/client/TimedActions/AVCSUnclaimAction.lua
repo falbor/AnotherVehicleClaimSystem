@@ -44,7 +44,7 @@ function ISAVCSVehicleUnclaimAction:perform()
 	sendClientCommand(self.character, "AVCS", "unclaimVehicle", { self.vehicle:getModData().SQLID })
 
     if UdderlyVehicleRespawn and SandboxVars.AVCS.UdderlyRespawn then
-        UdderlyVehicleRespawn.SpawnRandomVehicleAtRandomZoneInRandomCell()
+        UdderlyVehicleRespawn.SpawnRandomVehicleSomewhere()
     end
 
     ISBaseTimedAction.perform(self)

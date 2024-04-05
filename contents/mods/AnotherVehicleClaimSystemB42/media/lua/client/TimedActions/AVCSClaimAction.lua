@@ -45,7 +45,7 @@ function ISAVCSVehicleClaimAction:perform()
     end
 
     if UdderlyVehicleRespawn and SandboxVars.AVCS.UdderlyRespawn then
-        UdderlyVehicleRespawn.SpawnRandomVehicleAtRandomZoneInRandomCell()
+        UdderlyVehicleRespawn.SpawnRandomVehicleSomewhere()
     end
 
     ISBaseTimedAction.perform(self)
