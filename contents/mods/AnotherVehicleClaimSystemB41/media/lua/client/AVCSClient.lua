@@ -165,21 +165,14 @@ local function openClientAdminManager()
     AVCS.UI.AdminInstance:setVisible(true)
 end
 
-local function OnPreFillWorldObjectContextMenu(player, context, worldObjects, test)
+function AVCS.ClientOnPreFillWorldObjectContextMenu(player, context, worldObjects, test)
     context:addOption(getText("ContextMenu_AVCS_ClientUserUI"), worldObjects, openClientUserManager, nil)
 	if (string.lower(getPlayer():getAccessLevel()) ~= "none") or (not isClient() and not isServer()) then
 		context:addOption(getText("ContextMenu_AVCS_AdminUserUI"), worldObjects, openClientAdminManager, nil)
 	end
 end
 
-local function AVCSAfterGameStart()
-	ModData.request("AVCSByVehicleSQLID")
-	ModData.request("AVCSByPlayerID")
-	sendClientCommand(getPlayer(), "AVCS", "updateLastKnownLogonTime", nil)
-	Events.OnTick.Remove(AVCSAfterGameStart)
-end
-
-local function OnReceiveGlobalModData(key, modData)
+function AVCS.ClientOnReceiveGlobalModData(key, modData)
 	if key == "AVCSByVehicleSQLID" then
 		AVCS.dbByVehicleSQLID = modData
 	end
@@ -188,14 +181,24 @@ local function OnReceiveGlobalModData(key, modData)
 	end
 end
 
-local function EveryHours()
+function AVCS.ClientEveryHours()
 	if AVCS.dbByPlayerID[getPlayer():getUsername()] ~= nil then
 		sendClientCommand(getPlayer(), "AVCS", "updateLastKnownLogonTime", nil)
 	end
 end
 
-Events.OnPreFillWorldObjectContextMenu.Add(OnPreFillWorldObjectContextMenu)
-Events.OnTick.Add(AVCSAfterGameStart)
-Events.EveryHours.Add(EveryHours)
-Events.OnReceiveGlobalModData.Add(OnReceiveGlobalModData)
-Events.OnServerCommand.Add(AVCS.OnServerCommand)
+-- PZ doesn't initialise everything at the same time when the user connect to server
+-- Figuring out the exact initialize order is a pain
+-- Also, easier for others to write patches for these event triggers
+function AVCS.AfterGameStart()
+	Events.OnPreFillWorldObjectContextMenu.Add(AVCS.ClientOnPreFillWorldObjectContextMenu)
+	Events.OnReceiveGlobalModData.Add(AVCS.ClientOnReceiveGlobalModData)
+	ModData.request("AVCSByVehicleSQLID")
+	ModData.request("AVCSByPlayerID")
+	sendClientCommand(getPlayer(), "AVCS", "updateLastKnownLogonTime", nil)
+	Events.EveryHours.Add(AVCS.ClientEveryHours)
+	Events.OnServerCommand.Add(AVCS.OnServerCommand)
+	Events.OnTick.Remove(AVCS.AfterGameStart)
+end
+
+Events.OnTick.Add(AVCS.AfterGameStart)
