@@ -187,18 +187,15 @@ function AVCS.ClientEveryHours()
 	end
 end
 
--- PZ doesn't initialise everything at the same time when the user connect to server
--- Figuring out the exact initialize order is a pain
--- Also, easier for others to write patches for these event triggers
 function AVCS.AfterGameStart()
-	Events.OnPreFillWorldObjectContextMenu.Add(AVCS.ClientOnPreFillWorldObjectContextMenu)
-	Events.OnReceiveGlobalModData.Add(AVCS.ClientOnReceiveGlobalModData)
 	ModData.request("AVCSByVehicleSQLID")
 	ModData.request("AVCSByPlayerID")
 	sendClientCommand(getPlayer(), "AVCS", "updateLastKnownLogonTime", nil)
-	Events.EveryHours.Add(AVCS.ClientEveryHours)
 	Events.OnServerCommand.Add(AVCS.OnServerCommand)
 	Events.OnTick.Remove(AVCS.AfterGameStart)
 end
 
+Events.OnReceiveGlobalModData.Add(AVCS.ClientOnReceiveGlobalModData)
 Events.OnTick.Add(AVCS.AfterGameStart)
+Events.OnPreFillWorldObjectContextMenu.Add(AVCS.ClientOnPreFillWorldObjectContextMenu)
+Events.EveryHours.Add(AVCS.ClientEveryHours)
