@@ -1,8 +1,0 @@
-Tooltip_PTBR = {
-    Tooltip_AVCS_Needs = "Precisa de:",
-    Tooltip_AVCS_ClaimVehicle = "Reivindicar Ve�culo",
-    Tooltip_AVCS_Owner = "Propriet�rio",
-    Tooltip_AVCS_Expire = "Expira em",
-    Tooltip_AVCS_Towed = "N�o pode ser rebocado",
-    Tooltip_AVCS_ExceedLimit = "Excede o limite de reivindica��es",
-}
