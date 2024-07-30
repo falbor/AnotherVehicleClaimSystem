@@ -47,21 +47,13 @@ and so on
 -- vehicleID is vehicle object ID
 function AVCS.claimVehicle(playerObj, vehicleID)
 	local vehicleObj = getVehicleById(vehicleID.vehicle)
-
-	-- Assign Object ModData, workaround for SQL ID not being consistent for client-side and server-side
-	-- As such, we imprint the server-side SQL ID onto the vehicle parts at this point of time
-	-- Oddly, vehicle itself cannot hold ModData
-	local tempPart = AVCS.getMulePart(vehicleObj)
-	if tempPart == false or tempPart == nil then return end
-	if tempPart:getModData().SQLID == nil then
-		tempPart:getModData().SQLID = tonumber(getTimestamp() .. vehicleObj:getSqlId())
-
-		-- Force sync, users will get fresh mod data as they load into the cell
-		-- But we want users who already in cell to get this data as well
-		vehicleObj:transmitPartModData(tempPart)
+	vehicleID = AVCS.getVehicleID(vehicleObj)
+	-- If no ID, we create one
+	if not vehicleID then
+		vehicleObj:getModData().SQLID = tonumber(getTimestamp() .. vehicleObj:getSqlId())
+		vehicleID = vehicleObj:getModData().SQLID
+		sendServerCommand("AVCS", "registerClientVehicleSQLID", {vehicleObj:getId(), vehicleObj:getModData().SQLID})
 	end
-
-	vehicleID = tempPart:getModData().SQLID
 
 	-- Make sure is not already claimed
 	-- Only SQL ID is persistent, vehicleID is created on runtime
@@ -296,6 +288,19 @@ AVCS.onClientCommand = function(moduleName, command, playerObj, arg)
 	elseif moduleName == "AVCS" and command == "rebuildDB" then
 		if playerObj:getAccessLevel() == "admin" then
 			AVCS.rebuildDB()
+		end
+	elseif moduleName == "AVCS" and command == "relayClientUpdateVehicleSQLID" then
+		-- Transition from Mule Part SQLID to Vehicle SQLID
+		-- Relay ModData changes
+		local vehicleObj = getVehicleById(arg[1])
+		if vehicleObj then
+			-- We removing at server-side because client-side takes time to be updated to the server
+			-- Client-side mod data changes can unfortunately be lost if server shutdown at this very moment
+			-- It just bad game design thus we doing it at server-side in hope that the changes is saved if that happens
+			local tempPart = AVCS.getMulePart(vehicleObj)
+			vehicleObj:getModData().SQLID = tempPart:getModData().SQLID
+			tempPart:getModData().SQLID = nil
+			sendServerCommand("AVCS", "registerClientVehicleSQLID", {vehicleObj:getId(), vehicleObj:getModData().SQLID})
 		end
 	end
 end

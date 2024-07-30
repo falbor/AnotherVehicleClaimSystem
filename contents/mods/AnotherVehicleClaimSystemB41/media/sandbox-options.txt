@@ -50,7 +50,7 @@ option AVCS.ClaimTimeout
 
 option AVCS.MuleParts
 {
-		type = string, default = GloveBox;TruckBed;TruckBedOpen;TrailerTrunk;M101A3Trunk;Engine,
+		type = string, default =,
 		page = AVCS, translation = AVCS_MuleParts,
 }
 

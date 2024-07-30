@@ -60,6 +60,30 @@ function AVCS.matchTrunkPart(strTrunk)
 	return false
 end
 
+function AVCS.getVehicleID(vehicleObj)
+	if vehicleObj:getModData().SQLID then
+		return vehicleObj:getModData().SQLID
+	else
+		local tempPart = AVCS.getMulePart(vehicleObj)
+		if tempPart then
+			if tempPart:getModData().SQLID then
+				if not isClient() and isServer() then
+					vehicleObj:getModData().SQLID = tempPart:getModData().SQLID
+					tempPart:getModData().SQLID = nil
+					-- Vehicle ModData does not update immediately thus we need to force this for same cell players
+					sendServerCommand("AVCS", "registerClientVehicleSQLID", {vehicleObj:getId(), vehicleObj:getModData().SQLID})
+				else
+					-- Vehicle ModData does not update immediately thus we need to use server to force this for same cell players
+					sendClientCommand("AVCS", "relayClientUpdateVehicleSQLID", {vehicleObj:getId()})
+				end
+				return vehicleObj:getModData().SQLID
+			end
+		end
+	end
+	-- If no SQL ID
+	return nil
+end
+
 function AVCS.checkMaxClaim(playerObj)
 	-- Privileged users has no limit
 	if string.lower(playerObj:getAccessLevel()) ~= "none" then
@@ -82,18 +106,13 @@ function AVCS.checkMaxClaim(playerObj)
 end
 
 function AVCS.getPublicPermission(vehicleObj, type)
-	local tempPart = AVCS.getMulePart(vehicleObj)
-	if tempPart then
-		local vehicleSQL = tempPart:getModData().SQLID
-		if vehicleSQL then
-			if AVCS.dbByVehicleSQLID[vehicleSQL] then
-				if AVCS.dbByVehicleSQLID[vehicleSQL][type] then
-					return AVCS.dbByVehicleSQLID[vehicleSQL][type]
-				else
-					return false
-				end
+	local vehicleSQL = AVCS.getVehicleID(vehicleObj)
+	if vehicleSQL then
+		if AVCS.dbByVehicleSQLID[vehicleSQL] then
+			if AVCS.dbByVehicleSQLID[vehicleSQL][type] then
+				return AVCS.dbByVehicleSQLID[vehicleSQL][type]
 			else
-				return true
+				return false
 			end
 		else
 			return true
@@ -116,14 +135,7 @@ table / array = owned and permission
 function AVCS.checkPermission(playerObj, vehicleObj)
 	local vehicleSQL = nil
 	if type(vehicleObj) ~= "number" then
-		local tempPart = AVCS.getMulePart(vehicleObj)
-
-		-- Vehicle claiming not supported on this vehicle, likely a modded vehicle with non standard parts
-		if tempPart == false or tempPart == nil then
-			return false
-		end
-
-		vehicleSQL = tempPart:getModData().SQLID
+		vehicleSQL = AVCS.getVehicleID(vehicleObj)
 	else
 		vehicleSQL = vehicleObj
 	end
@@ -235,9 +247,8 @@ function AVCS.updateVehicleCoordinate(vehicleObj)
 	-- Server call, must be extreme efficient as this is called extreme frequently
 	-- Do not use loop here
 	if isServer() and not isClient() then
-		local tempPart = AVCS.getMulePart(vehicleObj)
-		if tempPart == false or tempPart == nil then return end
-		local vehicleID = tempPart:getModData().SQLID
+		local vehicleID = AVCS.getVehicleID(vehicleObj)
+		if not vehicleID then return end
 		if AVCS.dbByVehicleSQLID[vehicleID] ~= nil then
 			if AVCS.dbByVehicleSQLID[vehicleID].LastLocationX ~= math.floor(vehicleObj:getX()) or AVCS.dbByVehicleSQLID[vehicleID].LastLocationY ~= math.floor(vehicleObj:getY()) then
 				AVCS.dbByVehicleSQLID[vehicleID].LastLocationX = math.floor(vehicleObj:getX())

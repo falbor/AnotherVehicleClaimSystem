@@ -115,6 +115,14 @@ function AVCS.updateClientSpecifyVehicleUserPermission(arg)
 	end
 end
 
+-- Vehicle ModData does not update immediately, workaround to force sync
+function AVCS.registerClientVehicleSQLID(arg)
+	local vehicleObj = getVehicleById(arg[1])
+	if vehicleObj then
+		vehicleObj:getModData().SQLID = arg[2]
+	end
+end
+
 AVCS.OnServerCommand = function(moduleName, command, arg)
 	if moduleName == "AVCS" and command == "updateClientClaimVehicle" then
 		AVCS.updateClientClaimVehicle(arg)
@@ -128,6 +136,8 @@ AVCS.OnServerCommand = function(moduleName, command, arg)
 		AVCS.forcesyncClientGlobalModData()
 	elseif moduleName == "AVCS" and command == "updateClientSpecifyVehicleUserPermission" then
 		AVCS.updateClientSpecifyVehicleUserPermission(arg)
+	elseif moduleName == "AVCS" and command == "registerClientVehicleSQLID" then
+		AVCS.registerClientVehicleSQLID(arg)
 	end
 end
 
