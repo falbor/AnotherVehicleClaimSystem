@@ -72,11 +72,13 @@ function AVCS.getVehicleID(vehicleObj)
 					tempPart:getModData().SQLID = nil
 					-- Vehicle ModData does not update immediately thus we need to force this for same cell players
 					sendServerCommand("AVCS", "registerClientVehicleSQLID", {vehicleObj:getId(), vehicleObj:getModData().SQLID})
+					return vehicleObj:getModData().SQLID
 				else
+					local tempID = tempPart:getModData().SQLID
 					-- Vehicle ModData does not update immediately thus we need to use server to force this for same cell players
 					sendClientCommand("AVCS", "relayClientUpdateVehicleSQLID", {vehicleObj:getId()})
+					return tempID -- Workaround to resolve delay between server and client which resulted in "Claim Vehicle" label not reflecting correctly
 				end
-				return vehicleObj:getModData().SQLID
 			end
 		end
 	end
