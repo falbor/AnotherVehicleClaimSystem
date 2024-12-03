@@ -348,10 +348,7 @@ function AVCS.UI.UserManagerMain:createChildren()
     self.lblVehicleExpireInfo:instantiate()
     self:addChild(self.lblVehicleExpireInfo)
  
-    local rightTextPad = math.floor(235 * AVCS.getUIFontScale())
-    if AVCS.getUIFontScale() > 1 then
-        rightTextPad = rightTextPad - 16 * AVCS.getUIFontScale()
-    end
+    local rightTextPad = math.floor(235 * AVCS.getUIFontScale()) - 8 * (getCore():getOptionFontSize() - 1)
     self.lblVehicleLocation = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween + rightTextPad, padTop + 1, getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleLocation"), 1, 1, 1, 1, UIFont.NewSmall, true)
     self.lblVehicleLocation:initialise()
     self.lblVehicleLocation:instantiate()
