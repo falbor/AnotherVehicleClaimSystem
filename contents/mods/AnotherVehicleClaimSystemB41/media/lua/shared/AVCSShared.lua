@@ -271,3 +271,12 @@ function AVCS.updateVehicleCoordinate(vehicleObj)
 	else
 	end
 end
+
+function AVCS.getUIFontScale()
+	-- Size 1 is 100% aka default
+	-- Size 2 is 125% aka 1x
+	-- Size 3 is 150% aka 2x
+	-- Size 4 is 175% aka 3x
+	-- Size 5 is 200% aka 4x
+	return 1 + (getCore():getOptionFontSize() - 1) / 4
+end

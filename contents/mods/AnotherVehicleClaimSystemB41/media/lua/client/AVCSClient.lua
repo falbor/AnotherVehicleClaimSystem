@@ -146,8 +146,8 @@ local function openClientUserManager()
 		AVCS.UI.UserInstance:close()
 	end
 
-	local width = 650
-    local height = 350
+	local width = math.floor(650 * AVCS.getUIFontScale())
+    local height = math.floor(350 * AVCS.getUIFontScale())
 
     local x = getCore():getScreenWidth() / 2 - (width / 2)
     local y = getCore():getScreenHeight() / 2 - (height / 2)
@@ -163,8 +163,8 @@ local function openClientAdminManager()
 		AVCS.UI.AdminInstance:close()
 	end
 
-	local width = 955
-    local height = 500
+	local width = math.floor(955 * AVCS.getUIFontScale())
+    local height = math.floor(500 * AVCS.getUIFontScale())
 
     local x = getCore():getScreenWidth() / 2 - (width / 2)
     local y = getCore():getScreenHeight() / 2 - (height / 2)

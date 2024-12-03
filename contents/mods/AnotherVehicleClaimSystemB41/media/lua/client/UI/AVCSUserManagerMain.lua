@@ -1,8 +1,4 @@
 local padTop = getTextManager():getFontHeight(UIFont.NewSmall) + 1
-local padLeft = 10
-local padRight = 10
-local padBottom = 10
-local tabBtnSize = 30
 -- Set as global local variable instead of "self" variable because not something meant to be modified by outside codess
 local prevTabBtn
 
@@ -55,7 +51,9 @@ function AVCS.UI.UserManagerMain:btnModify_onClick(btn)
         self.panelModify:removeFromUIManager()
         self.panelModify = nil
     end
-    self.panelModify = AVCS.UI.UserPermissionPanel:new((getCore():getScreenWidth() / 2) - (200 / 2), (getCore():getScreenHeight() / 2) - (300 / 2), 200, 300, self.listVehicles.items[self.listVehicles.selected].item)
+    local width = 200 * AVCS.getUIFontScale()
+    local height = 300 * AVCS.getUIFontScale()
+    self.panelModify = AVCS.UI.UserPermissionPanel:new((getCore():getScreenWidth() / 2) - (width / 2), (getCore():getScreenHeight() / 2) - (height / 2), width, height, self.listVehicles.items[self.listVehicles.selected].item)
     self.panelModify:initialise()
     self.panelModify:addToUIManager()
     self.panelModify:setVisible(true)
@@ -77,7 +75,9 @@ function AVCS.UI.UserManagerMain:btnUnclaim_onClick(btn)
         self.modDialog:removeFromUIManager()
         self.modDialog = nil
     end
-    self.modDialog = ISModalDialog:new((getCore():getScreenWidth() / 2) - (250 / 2), (getCore():getScreenHeight() / 2) - (100 / 2), 250, 100, message, true, self, AVCS.UI.UserManagerMain.btnUnclaim_onConfirmClick, getPlayer():getPlayerNum(), nil)
+    local width = 250 * AVCS.getUIFontScale()
+    local height = 100 * AVCS.getUIFontScale()
+    self.modDialog = ISModalDialog:new((getCore():getScreenWidth() / 2) - (width / 2), (getCore():getScreenHeight() / 2) - (height / 2), width, height, message, true, self, AVCS.UI.UserManagerMain.btnUnclaim_onConfirmClick, getPlayer():getPlayerNum(), nil)
     self.modDialog:initialise()
     self.modDialog:addToUIManager()
 end
@@ -257,9 +257,8 @@ end
 -- Create on-demand buttons
 function AVCS.UI.UserManagerMain:addTabButtons(btnName, bgImage, x, y)
     local i = #self.tabButtons + 1
-    local top = getTextManager():getFontHeight(UIFont.NewSmall) + 1
 
-    self.tabButtons[i] = ISButton:new(x, y, tabBtnSize, tabBtnSize, "", self, AVCS.UI.UserManagerMain.tabBtn_onClick)
+    self.tabButtons[i] = ISButton:new(x, y, self.tabBtnSize, self.tabBtnSize, "", self, AVCS.UI.UserManagerMain.tabBtn_onClick)
     self.tabButtons[i].internal = btnName
     self.tabButtons[i].anchorTop = true
     self.tabButtons[i].anchorBottom = true
@@ -292,7 +291,7 @@ function AVCS.UI.UserManagerMain:createChildren()
     ISCollapsableWindow.createChildren(self)
 
     -- Create a visual left pane where buttons will sit in
-    local leftPaneHolderWidth = 40
+    local leftPaneHolderWidth = math.floor(40 * AVCS.getUIFontScale())
     self.leftPaneHolder = ISPanel:new(0, padTop, leftPaneHolderWidth, self.height - 1 - getTextManager():getFontHeight(UIFont.NewSmall), "", self, AVCS.UI.UserManagerMain.btnUnclaim_onClick)
     --self.leftPaneHolder.displayBackground = true
     --self.leftPaneHolder.backgroundColor = {r=0, g=0, b=0, a=1}
@@ -301,8 +300,7 @@ function AVCS.UI.UserManagerMain:createChildren()
     self:addChild(self.leftPaneHolder)
 
     -- Create Selection List
-    local listVehiclesStartX = 40
-    local listVehiclesWidth = 250
+    local listVehiclesWidth = math.floor(250 * AVCS.getUIFontScale())
     self.listVehicles = ISScrollingListBox:new(leftPaneHolderWidth + 1, padTop + 1, listVehiclesWidth, self.height - padTop - 1)
     self.listVehicles.onMouseDown = self.listVehiclesOnMouseDown
     self.listVehicles.onJoypadDirUp = self.listVehiclesOnJoypadDirUp
@@ -327,43 +325,49 @@ function AVCS.UI.UserManagerMain:createChildren()
     self.vehiclePreview.javaObject:fromLua2("setVehicleScript", "previewVeh", "")
     self:addChild(self.vehiclePreview)
 
+    local padBetween = math.floor(5 * AVCS.getUIFontScale())
+
     -- Create Label for Vehicle Info
-    self.lblVehicleOwner = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + 5, padTop + 1, getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleOwner"), 1, 1, 1, 1, UIFont.NewSmall, true)
+    self.lblVehicleOwner = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween, padTop + 1, getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleOwner"), 1, 1, 1, 1, UIFont.NewSmall, true)
     self.lblVehicleOwner:initialise()
     self.lblVehicleOwner:instantiate()
     self:addChild(self.lblVehicleOwner)
 
-    self.lblVehicleOwnerInfo = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + 5, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 1) + (1 * 1), getTextManager():getFontHeight(UIFont.NewSmall), "", 0.2, 1, 0.2, 1, UIFont.NewSmall, true)
+    self.lblVehicleOwnerInfo = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 1) + (1 * 1), getTextManager():getFontHeight(UIFont.NewSmall), "", 0.2, 1, 0.2, 1, UIFont.NewSmall, true)
     self.lblVehicleOwnerInfo:initialise()
     self.lblVehicleOwnerInfo:instantiate()
     self:addChild(self.lblVehicleOwnerInfo)
 
-    self.lblVehicleExpire = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + 5, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 2) + (1 * 2), getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleExpire"), 1, 1, 1, 1, UIFont.NewSmall, true)
+    self.lblVehicleExpire = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 2) + (1 * 2), getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleExpire"), 1, 1, 1, 1, UIFont.NewSmall, true)
     self.lblVehicleExpire:initialise()
     self.lblVehicleExpire:instantiate()
     self:addChild(self.lblVehicleExpire)
 
-    self.lblVehicleExpireInfo = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + 5, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 3) + (1 * 3), getTextManager():getFontHeight(UIFont.NewSmall), "", 0.2, 1, 0.2, 1, UIFont.NewSmall, true)
+    self.lblVehicleExpireInfo = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 3) + (1 * 3), getTextManager():getFontHeight(UIFont.NewSmall), "", 0.2, 1, 0.2, 1, UIFont.NewSmall, true)
     self.lblVehicleExpireInfo:initialise()
     self.lblVehicleExpireInfo:instantiate()
     self:addChild(self.lblVehicleExpireInfo)
-
-    self.lblVehicleLocation = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + 5 + 230, padTop + 1, getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleLocation"), 1, 1, 1, 1, UIFont.NewSmall, true)
+ 
+    local rightTextPad = math.floor(235 * AVCS.getUIFontScale())
+    if AVCS.getUIFontScale() > 1 then
+        rightTextPad = rightTextPad - 16 * AVCS.getUIFontScale()
+    end
+    self.lblVehicleLocation = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween + rightTextPad, padTop + 1, getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleLocation"), 1, 1, 1, 1, UIFont.NewSmall, true)
     self.lblVehicleLocation:initialise()
     self.lblVehicleLocation:instantiate()
     self:addChild(self.lblVehicleLocation)
 
-    self.lblVehicleLocationInfo = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + 5 + 230, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 1) + (1 * 1), getTextManager():getFontHeight(UIFont.NewSmall), "", 0.2, 1, 0.2, 1, UIFont.NewSmall, true)
+    self.lblVehicleLocationInfo = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween + rightTextPad, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 1) + (1 * 1), getTextManager():getFontHeight(UIFont.NewSmall), "", 0.2, 1, 0.2, 1, UIFont.NewSmall, true)
     self.lblVehicleLocationInfo:initialise()
     self.lblVehicleLocationInfo:instantiate()
     self:addChild(self.lblVehicleLocationInfo)
 
-    self.lblVehicleLastLocationUpdate = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + 5 + 230, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 2) + (1 * 2), getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleLastLocationUpdate"), 1, 1, 1, 1, UIFont.NewSmall, true)
+    self.lblVehicleLastLocationUpdate = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween + rightTextPad, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 2) + (1 * 2), getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Manager_lblVehicleLastLocationUpdate"), 1, 1, 1, 1, UIFont.NewSmall, true)
     self.lblVehicleLastLocationUpdate:initialise()
     self.lblVehicleLastLocationUpdate:instantiate()
     self:addChild(self.lblVehicleLastLocationUpdate)
 
-    self.lblVehicleLastLocationUpdateInfo = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + 5 + 230, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 3) + (1 * 3), getTextManager():getFontHeight(UIFont.NewSmall), "", 0.2, 1, 0.2, 1, UIFont.NewSmall, true)
+    self.lblVehicleLastLocationUpdateInfo = ISLabel:new(leftPaneHolderWidth + 1 + listVehiclesWidth + 1 + padBetween + rightTextPad, padTop + 1 + ((getTextManager():getFontHeight(UIFont.NewSmall)) * 3) + (1 * 3), getTextManager():getFontHeight(UIFont.NewSmall), "", 0.2, 1, 0.2, 1, UIFont.NewSmall, true)
     self.lblVehicleLastLocationUpdateInfo:initialise()
     self.lblVehicleLastLocationUpdateInfo:instantiate()
     self:addChild(self.lblVehicleLastLocationUpdateInfo)
@@ -371,7 +375,7 @@ function AVCS.UI.UserManagerMain:createChildren()
     -- Add tab buttons to function with list box
     local tempImage
     tempImage = getTexture("media/ui/avcs_personal.png")
-    self:addTabButtons("tabPersonal", tempImage, 5, getTextManager():getFontHeight(UIFont.NewSmall) + 1 + 5)
+    self:addTabButtons("tabPersonal", tempImage, math.floor(5 * AVCS.getUIFontScale()), getTextManager():getFontHeight(UIFont.NewSmall) + 1 + 5)
     self.tabButtons[1]:setTooltip(getText("IGUI_AVCS_User_Manager_tabButton_Personal_Tooltip"))
     -- Set this as default tab button
     self.tabButtons[1]:setBackgroundRGBA(0.3, 0.3, 0.3, 1)
@@ -381,8 +385,8 @@ function AVCS.UI.UserManagerMain:createChildren()
         --if SafeHouse.hasSafehouse(getPlayer():getUsername()) then
             tempImage = getTexture("media/ui/avcs_safehouse.png")
             local y = getTextManager():getFontHeight(UIFont.NewSmall) + 1 + 5
-            y = y + (tabBtnSize * #self.tabButtons) + 5
-            self:addTabButtons("tabSafehouse", tempImage, 5, y)
+            y = y + (self.tabBtnSize * #self.tabButtons) + 5
+            self:addTabButtons("tabSafehouse", tempImage, math.floor(5 * AVCS.getUIFontScale()), y)
             self.tabButtons[#self.tabButtons]:setTooltip(getText("IGUI_AVCS_User_Manager_tabButton_Safehouse_Tooltip"))
         --end
     end
@@ -390,22 +394,22 @@ function AVCS.UI.UserManagerMain:createChildren()
         --if Faction.getPlayerFaction(getPlayer():getUsername()) then
             tempImage = getTexture("media/ui/avcs_factions.png")
             local y = getTextManager():getFontHeight(UIFont.NewSmall) + 1 + 5
-            y = y + (tabBtnSize * #self.tabButtons) + 5
+            y = y + (self.tabBtnSize * #self.tabButtons) + 5
             if #self.tabButtons > 1 then
                 y = y + ((#self.tabButtons - 1) * 5)
             end
-            self:addTabButtons("tabFaction", tempImage, 5, y)
+            self:addTabButtons("tabFaction", tempImage, math.floor(5 * AVCS.getUIFontScale()), y)
             self.tabButtons[#self.tabButtons]:setTooltip(getText("IGUI_AVCS_User_Manager_tabButton_Faction_Tooltip"))
         --end
     end
 
     -- Create modify button
     local y = getTextManager():getFontHeight(UIFont.NewSmall) + 1 + 5
-    y = y + (tabBtnSize * #self.tabButtons) + 5
+    y = y + (self.tabBtnSize * #self.tabButtons) + 5
     if #self.tabButtons > 1 then
         y = y + ((#self.tabButtons - 1) * 5)
     end
-    self.btnModify = ISButton:new(5, y, tabBtnSize, tabBtnSize, "", self, AVCS.UI.UserManagerMain.btnModify_onClick)
+    self.btnModify = ISButton:new(math.floor(5 * AVCS.getUIFontScale()), y, self.tabBtnSize, self.tabBtnSize, "", self, AVCS.UI.UserManagerMain.btnModify_onClick)
     self.btnModify.internal = "btnModify"
     self.btnModify.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
     self.btnModify.backgroundColor = {r=0, g=0, b=0, a=1}
@@ -420,11 +424,11 @@ function AVCS.UI.UserManagerMain:createChildren()
 
     -- Create unclaim button
     local y = getTextManager():getFontHeight(UIFont.NewSmall) + 1 + 5
-    y = y + (tabBtnSize * (#self.tabButtons + 1)) + 5
+    y = y + (self.tabBtnSize * (#self.tabButtons + 1)) + 5
     if #self.tabButtons > 1 then
         y = y + ((#self.tabButtons - 1 + 1) * 5)
     end
-    self.btnUnclaim = ISButton:new(5, y, tabBtnSize, tabBtnSize, "", self, AVCS.UI.UserManagerMain.btnUnclaim_onClick)
+    self.btnUnclaim = ISButton:new(math.floor(5 * AVCS.getUIFontScale()), y, self.tabBtnSize, self.tabBtnSize, "", self, AVCS.UI.UserManagerMain.btnUnclaim_onClick)
     self.btnUnclaim.internal = "btnUnclaim"
     self.btnUnclaim.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
     self.btnUnclaim.backgroundColor = {r=0, g=0, b=0, a=1}
@@ -470,6 +474,7 @@ function AVCS.UI.UserManagerMain:new(x, y, width, height)
     local o = ISCollapsableWindow:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
+    o.tabBtnSize = math.floor(30 * AVCS.getUIFontScale())
     o.showBackground = false
     o.backgroundColor = {r=0.15, g=0.15, b=0.15, a=1.0}
 	o.showBorder = true

@@ -203,7 +203,7 @@ end
 function AVCS.UI.AdminManagerMain:createChildren()
     ISCollapsableWindow.createChildren(self)
 
-    self.listData = ISScrollingListBox:new(40, 20 + padTop + getTextManager():getFontHeight(UIFont.NewSmall), self.width - 50, 360);
+    self.listData = ISScrollingListBox:new(30 * AVCS.getUIFontScale() + 10, 20 + padTop + getTextManager():getFontHeight(UIFont.NewSmall), self.width - 40 * AVCS.getUIFontScale() - 5 + 1 * AVCS.getUIFontScale(), 360 * AVCS.getUIFontScale());
     self.listData:initialise()
     self.listData:instantiate()
     self.listData.joypadParent = self
@@ -212,31 +212,37 @@ function AVCS.UI.AdminManagerMain:createChildren()
     self.listData.drawText = self.listDataDrawText
     self.listData.drawBorder = true
     -- Total width 840
-    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listUsername"), 0) -- 150 width, 126 width actual text
-    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listVehicleID"), 150) -- 70 width, title is 55 width actual
-    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listCarName"), 270) -- 300 width, 46 characters max, we will cut off if too long
-    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listClaimedDate"), 570) -- 120 width, 103 width actual text
-    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listLocation"), 690) -- 80 width, 74 width actual
-    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listExpireon"), 770) -- 120 width, 103 width actual text
+    local width = 0
+    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listUsername"), width) -- 160 width, 126 width actual text
+    width = 160 * AVCS.getUIFontScale()
+    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listVehicleID"), width) -- 60 width, title is 55 width actual
+    width = 270 * AVCS.getUIFontScale()
+    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listCarName"), width) -- 300 width, 46 characters max, we will cut off if too long
+    width = 570 * AVCS.getUIFontScale()
+    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listClaimedDate"), width) -- 120 width, 103 width actual text
+    width = 700 * AVCS.getUIFontScale()
+    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listLocation"),  width) -- 80 width, 74 width actual
+    width = 785 * AVCS.getUIFontScale()
+    self.listData:addColumn(getText("IGUI_AVCS_Admin_Manager_listExpireon"), width) -- 105 width, 103 width actual text
     self:addChild(self.listData)
     self.listData:setFont(UIFont.NewSmall, 5)
 
-    self.lblFilter = ISLabel:new(41, self.listData:getBottom() + 10, getTextManager():getFontHeight(UIFont.NewLarge), getText("IGUI_AVCS_Admin_Manager_lblFilter"), 1, 1, 1, 1, UIFont.NewLarge, true)
+    self.lblFilter = ISLabel:new(41 * AVCS.getUIFontScale(), self.listData:getBottom() + 10, getTextManager():getFontHeight(UIFont.NewLarge), getText("IGUI_AVCS_Admin_Manager_lblFilter"), 1, 1, 1, 1, UIFont.NewLarge, true)
     self.lblFilter:initialise()
     self.lblFilter:instantiate()
     self:addChild(self.lblFilter)
 
     -- Just to use it as visual header
-    self.listFilterHeader = ISScrollingListBox:new(40, self.lblFilter:getBottom() + 24, 452, 0)
+    self.listFilterHeader = ISScrollingListBox:new(40 * AVCS.getUIFontScale(), self.lblFilter:getBottom() + 24 * AVCS.getUIFontScale(), 452 * AVCS.getUIFontScale(), 0)
     self.listFilterHeader:initialise()
     self.listFilterHeader:instantiate()
     self.listFilterHeader.drawBorder = true
     self.listFilterHeader:addColumn(getText("IGUI_AVCS_Admin_Manager_listUsername"), 0) -- 150 width, 126 width actual text
-    self.listFilterHeader:addColumn(getText("IGUI_AVCS_Admin_Manager_listCarName"), 150) -- 300 width, 46 characters max
+    self.listFilterHeader:addColumn(getText("IGUI_AVCS_Admin_Manager_listCarName"), 150 * AVCS.getUIFontScale()) -- 300 width, 46 characters max
     self:addChild(self.listFilterHeader)
     self.listFilterHeader:setFont(UIFont.NewSmall, 5)
     
-    self.textFilterUsername = ISTextEntryBox:new("", 40, self.listFilterHeader:getBottom(), 151, getTextManager():getFontHeight(UIFont.NewMedium))
+    self.textFilterUsername = ISTextEntryBox:new("", 40 * AVCS.getUIFontScale(), self.listFilterHeader:getBottom(), 151 * AVCS.getUIFontScale(), getTextManager():getFontHeight(UIFont.NewMedium))
     self.textFilterUsername.font = UIFont.NewMedium
     self.textFilterUsername:initialise()
     self.textFilterUsername:instantiate()
@@ -245,7 +251,7 @@ function AVCS.UI.AdminManagerMain:createChildren()
     self.textFilterUsername:setClearButton(true)
     self:addChild(self.textFilterUsername)
 
-    self.textFilterVehicleName = ISTextEntryBox:new("", 190, self.listFilterHeader:getBottom(), 302, getTextManager():getFontHeight(UIFont.NewMedium))
+    self.textFilterVehicleName = ISTextEntryBox:new("", 190 * AVCS.getUIFontScale(), self.listFilterHeader:getBottom(), 302 * AVCS.getUIFontScale(), getTextManager():getFontHeight(UIFont.NewMedium))
     self.textFilterVehicleName.font = UIFont.NewMedium
     self.textFilterVehicleName:initialise()
     self.textFilterVehicleName:instantiate()
@@ -254,9 +260,10 @@ function AVCS.UI.AdminManagerMain:createChildren()
     self:addChild(self.textFilterVehicleName)
 
     local tempImage
+    local tabBtnSize = 30 * AVCS.getUIFontScale()
 
     tempImage = getTexture("media/ui/avcs_safehouse.png")
-    self.btnViewSafehouse = ISButton:new(6, 11 + getTextManager():getFontHeight(UIFont.NewSmall) , 30, 30, "", self, self.btnOnClick)
+    self.btnViewSafehouse = ISButton:new(6, 10 + getTextManager():getFontHeight(UIFont.NewSmall), tabBtnSize, tabBtnSize, "", self, self.btnOnClick)
     self.btnViewSafehouse.internal = "btnViewSafehouse"
     self.btnViewSafehouse.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
     self.btnViewSafehouse.backgroundColor = {r=0, g=0, b=0, a=1}
@@ -270,7 +277,7 @@ function AVCS.UI.AdminManagerMain:createChildren()
     self:addChild(self.btnViewSafehouse)
 
     tempImage = getTexture("media/ui/avcs_factions.png")
-    self.btnViewFaction = ISButton:new(6, 46 + getTextManager():getFontHeight(UIFont.NewSmall) , 30, 30, "", self, self.btnOnClick)
+    self.btnViewFaction = ISButton:new(6, tabBtnSize * 1 + 10 + getTextManager():getFontHeight(UIFont.NewSmall) + 2 + 1 * AVCS.getUIFontScale(), tabBtnSize, tabBtnSize, "", self, self.btnOnClick)
     self.btnViewFaction.internal = "btnViewFaction"
     self.btnViewFaction.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
     self.btnViewFaction.backgroundColor = {r=0, g=0, b=0, a=1}
@@ -284,7 +291,7 @@ function AVCS.UI.AdminManagerMain:createChildren()
     self:addChild(self.btnViewFaction)
 
     tempImage = getTexture("media/ui/avcs_modify.png")
-    self.btnModifyPermissions = ISButton:new(6, 81 + getTextManager():getFontHeight(UIFont.NewSmall) , 30, 30, "", self, self.btnOnClick)
+    self.btnModifyPermissions = ISButton:new(6, tabBtnSize * 2 + 10 + getTextManager():getFontHeight(UIFont.NewSmall) + 4 + 1 * AVCS.getUIFontScale(), tabBtnSize, tabBtnSize, "", self, self.btnOnClick)
     self.btnModifyPermissions.internal = "btnModifyPermissions"
     self.btnModifyPermissions.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
     self.btnModifyPermissions.backgroundColor = {r=0, g=0, b=0, a=1}
@@ -298,7 +305,7 @@ function AVCS.UI.AdminManagerMain:createChildren()
     self:addChild(self.btnModifyPermissions)
 
     tempImage = getTexture("media/ui/avcs_delete.png")
-    self.btnDelete = ISButton:new(6, 116 + getTextManager():getFontHeight(UIFont.NewSmall) , 30, 30, "", self, self.btnOnClick)
+    self.btnDelete = ISButton:new(6, tabBtnSize * 3 + 10 + getTextManager():getFontHeight(UIFont.NewSmall) + 6 + 1 * AVCS.getUIFontScale(), tabBtnSize, tabBtnSize, "", self, self.btnOnClick)
     self.btnDelete.internal = "btnDelete"
     self.btnDelete.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
     self.btnDelete.backgroundColor = {r=0, g=0, b=0, a=1}
@@ -341,7 +348,7 @@ function AVCS.UI.AdminManagerMain:btnOnClick(btn)
         factionUI:initialise()
         factionUI:addToUIManager()
     elseif btn.internal == "btnModifyPermissions" then
-        self.panelModify = AVCS.UI.UserPermissionPanel:new((getCore():getScreenWidth() / 2) - (200 / 2), (getCore():getScreenHeight() / 2) - (300 / 2), 200, 300, self.listData.items[self.listData.selected].item.vehicleID)
+        self.panelModify = AVCS.UI.UserPermissionPanel:new((getCore():getScreenWidth() / 2) - (200 * AVCS.getUIFontScale() / 2), (getCore():getScreenHeight() / 2) - (300 * AVCS.getUIFontScale() / 2), 200 * AVCS.getUIFontScale(), 300 * AVCS.getUIFontScale(), self.listData.items[self.listData.selected].item.vehicleID)
         self.panelModify:initialise()
         self.panelModify:addToUIManager()
         self.panelModify:setVisible(true)

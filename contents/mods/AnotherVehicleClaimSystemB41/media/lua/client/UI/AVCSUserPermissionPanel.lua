@@ -1,5 +1,4 @@
 local pad = 10
-local optionSets = {}
 
 AVCS.UI.UserPermissionPanel = ISPanel:derive("AVCS.UI.UserPermissionPanel")
 
@@ -49,7 +48,6 @@ function AVCS.UI.UserPermissionPanel:btnConfirm_onClick(btn)
 end
 
 function AVCS.UI.UserPermissionPanel:addSets(text, name)
-    local top = pad + getTextManager():getFontHeight(UIFont.NewSmall)
     local lblpadleft = pad + 10
     local i = #self.lblSet + 1
 
@@ -71,8 +69,8 @@ function AVCS.UI.UserPermissionPanel:addSets(text, name)
 end
 
 function AVCS.UI.UserPermissionPanel:createChildren()
-    local btnWidth = 50
-    local bthHeight = 30
+    local btnWidth = 50 * AVCS.getUIFontScale()
+    local bthHeight = 30 * AVCS.getUIFontScale()
 
     self.btnCancel = ISButton:new(self.width / 2 - btnWidth - 15, self.height - bthHeight - pad, btnWidth, bthHeight, "Cancel", self, AVCS.UI.UserPermissionPanel.btnCancel_onClick)
     self.btnCancel.internal = "btnCancel"
@@ -92,7 +90,6 @@ function AVCS.UI.UserPermissionPanel:createChildren()
     self.btnConfirm:setEnable(true)
     self:addChild(self.btnConfirm)
 
-    local lblpadleft = pad + 10
     local lblwidth = getTextManager():MeasureStringX(UIFont.NewSmall, getText("IGUI_AVCS_User_Permissions_lblPublicPermissions"))
     self.lblPublicPermissions = ISLabel:new((self.width / 2) - (lblwidth / 2), pad, getTextManager():getFontHeight(UIFont.NewSmall), getText("IGUI_AVCS_User_Permissions_lblPublicPermissions"), 1, 1, 1, 1, UIFont.NewSmall, true)
     self.lblPublicPermissions:initialise()
