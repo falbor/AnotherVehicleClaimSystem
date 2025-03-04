@@ -159,6 +159,10 @@ if not AVCS.oISSwitchVehicleSeat then
 end
 
 function ISSwitchVehicleSeat:new(character, seatTo)
+	if not character:getVehicle() then
+		return AVCS.oISSwitchVehicleSeat(self, character, seatTo)
+	end
+
 	-- For non-driver seats, driver seat is 0
     if seatTo ~= 0 then
 		if AVCS.getPublicPermission(character:getVehicle(), "AllowPassenger") then
