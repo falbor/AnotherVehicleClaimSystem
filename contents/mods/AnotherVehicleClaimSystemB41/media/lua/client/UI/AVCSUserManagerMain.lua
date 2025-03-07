@@ -161,7 +161,7 @@ function AVCS.UI.UserManagerMain:updateListVehicles()
             end
         end
     elseif prevTabBtn.internal == "tabSafehouse" then
-        local safehouseObj = SafeHouse.hasSafehouse(getPlayer():getUsername())
+        local safehouseObj = SafeHouse.hasSafehouse(getPlayer())
         if safehouseObj then
             local tempPlayers = safehouseObj:getPlayers()
             for i = 0, tempPlayers:size() - 1 do
@@ -187,7 +187,7 @@ function AVCS.UI.UserManagerMain:updateListVehicles()
             
         end
     elseif prevTabBtn.internal == "tabFaction" then
-        local factionObj = Faction.getPlayerFaction(getPlayer():getUsername())
+        local factionObj = Faction.getPlayerFaction(getPlayer())
         if factionObj then
             -- Owner and Members are not in the same list
             -- Dirty codings
@@ -379,16 +379,16 @@ function AVCS.UI.UserManagerMain:createChildren()
     prevTabBtn = self.tabButtons[1]
     
     if SandboxVars.AVCS.AllowSafehouse then
-        --if SafeHouse.hasSafehouse(getPlayer():getUsername()) then
+        if SafeHouse.hasSafehouse(getPlayer()) then
             tempImage = getTexture("media/ui/avcs_safehouse.png")
             local y = getTextManager():getFontHeight(UIFont.NewSmall) + 1 + 5
             y = y + (self.tabBtnSize * #self.tabButtons) + 5
             self:addTabButtons("tabSafehouse", tempImage, math.floor(5 * AVCS.getUIFontScale()), y)
             self.tabButtons[#self.tabButtons]:setTooltip(getText("IGUI_AVCS_User_Manager_tabButton_Safehouse_Tooltip"))
-        --end
+        end
     end
     if SandboxVars.AVCS.AllowFaction then
-        --if Faction.getPlayerFaction(getPlayer():getUsername()) then
+        if Faction.getPlayerFaction(getPlayer()) then
             tempImage = getTexture("media/ui/avcs_factions.png")
             local y = getTextManager():getFontHeight(UIFont.NewSmall) + 1 + 5
             y = y + (self.tabBtnSize * #self.tabButtons) + 5
@@ -397,7 +397,7 @@ function AVCS.UI.UserManagerMain:createChildren()
             end
             self:addTabButtons("tabFaction", tempImage, math.floor(5 * AVCS.getUIFontScale()), y)
             self.tabButtons[#self.tabButtons]:setTooltip(getText("IGUI_AVCS_User_Manager_tabButton_Faction_Tooltip"))
-        --end
+        end
     end
 
     -- Create modify button
